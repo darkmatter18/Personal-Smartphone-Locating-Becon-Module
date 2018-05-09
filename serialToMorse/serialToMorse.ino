@@ -1,32 +1,32 @@
 //Include Header file
 #include <LiquidCrystal.h>
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);          //Declearing lcd pins
-int pinLED = 9;                                 //Declearing LED pin for Android input
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);                  //Declearing lcd pins
+int pinLED = 9;                                         //Declearing LED pin for Android input
 
-int PIN_OUT = 13;                               //Define the LED Pin for MorseCode
+int PIN_OUT = 13;                                       //Define the LED Pin for MorseCode
 
-#define UNIT_LENGTH    250                      //Define unit length in ms
+#define UNIT_LENGTH    250                              //Define unit length in ms
 
-const int ST_0 = 0;                             //waiting Sync word
-const int ST_1_CMD = 1;                         //Waiting CMD
-const int ST_2_LENGTH= 2;                       //Receiving Length for CMD_03_TEXT
-const int ST_3_DATA= 3;                         //Receiving Data for CMD_03_TEXT
-const byte IGNORE_00 = 0x00;                    //There Variables are pre-decleared in android side
-const byte SYNC_WORD = 0xFF;                    //For Perform a equality cheak;
-const byte CMD_01_LEDON = 0x01;                 //This is Led On var
-const byte CMD_02_LEDOFF= 0x02;                 //This is Led Off Var
-const byte CMD_03_TEXT  = 0x03;                 //This var used to receive String
-int cmdState;                                   //Uses as a var to store incoming operaton
-int dataIndex;                                  //Used for index data
+const int ST_0 = 0;                                     //waiting Sync word
+const int ST_1_CMD = 1;                                 //Waiting CMD
+const int ST_2_LENGTH= 2;                               //Receiving Length for CMD_03_TEXT
+const int ST_3_DATA= 3;                                 //Receiving Data for CMD_03_TEXT
+const byte IGNORE_00 = 0x00;                            //There Variables are pre-decleared in android side
+const byte SYNC_WORD = 0xFF;                            //For Perform a equality cheak;
+const byte CMD_01_LEDON = 0x01;                         //This is Led On var
+const byte CMD_02_LEDOFF= 0x02;                         //This is Led Off Var
+const byte CMD_03_TEXT  = 0x03;                         //This var used to receive String
+int cmdState;                                           //Uses as a var to store incoming operaton
+int dataIndex;                                          //Used for index data
 
-const int MAX_LENGTH = 16;                      //Decleared Maximum dataLength 
-byte data[MAX_LENGTH];                          //Decleared a arrey for receiving data
-int dataLength;                                 //Used to store the dataLength of Receiving byte
+const int MAX_LENGTH = 16;                              //Decleared Maximum dataLength 
+byte data[MAX_LENGTH];                                  //Decleared a arrey for receiving data
+int dataLength;                                         //Used to store the dataLength of Receiving byte
 
-char receiveMessage;                            //Used to convert receivedData to receiveMessage for Morse
-char arrReceiveMassage[20];                     //making an array of receivedmessage
-int xi;                                         //needed for arrReceiveMassage indexing 
+char receiveMessage;                                    //Used to convert receivedData to receiveMessage for Morse
+char arrReceiveMassage[20];                             //making an array of receivedmessage
+int xi;                                                 //needed for arrReceiveMassage indexing 
 
 //Build a struct with the morse code mapping
 static const struct{
@@ -57,24 +57,24 @@ static const struct{
 
 void setup() {
     Serial.begin(9600);
-    pinMode(pinLED, OUTPUT);                    //Assign Android led pin as output pin
-    digitalWrite(pinLED, LOW);                  //Assign android led pin as LOW
-    pinMode( PIN_OUT, OUTPUT );                 //Assign Morse led as output pin
-    digitalWrite( PIN_OUT, LOW );               //Assign Morse led pin as LOW
+    pinMode(pinLED, OUTPUT);                            //Assign Android led pin as output pin
+    digitalWrite(pinLED, LOW);                          //Assign android led pin as LOW
+    pinMode( PIN_OUT, OUTPUT );                         //Assign Morse led as output pin
+    digitalWrite( PIN_OUT, LOW );                       //Assign Morse led pin as LOW
   
-    lcd.begin(16, 2);                           // 16*2 LCD decleared
-    lcd.print("Host Mode:");                    //Print the Line
+    lcd.begin(16, 2);                                   // 16*2 LCD decleared
+    lcd.print("Host Mode:");                            //Print the Line
 }
 
 void loop(){                             
     //Getting Data via Serial
-    if(Serial.available()){                     //Cheak if the serial is available
-        while(Serial.available() > 0){          //If Serial is avaiable, then
-            int byteIn = Serial.read();         //Read data from serial and
-            cmdHandle(byteIn);                  //Put data one bit by another -using loop
-            arrReceiveMassage[xi] = receivedmessage         //Making an array by received char
+    if(Serial.available()){                             //Cheak if the serial is available
+        while(Serial.available() > 0){                  //If Serial is avaiable, then
+            int byteIn = Serial.read();                 //Read data from serial and
+            cmdHandle(byteIn);                          //Put data one bit by another -using loop
+            arrReceiveMassage[xi] = receiveMessage;     //Making an array by received char
             xi++;
-        }                                       //Unless Serial stop sendind data 
+        }                                               //Unless Serial stop sendind data 
     }
     //Morse code Execution
     String morseWord = encode(arrReceiveMassage);
@@ -100,7 +100,6 @@ void loop(){
                 delay( UNIT_LENGTH );
         }
     }
-}
 }
 
 //Function that handles all received bytes from phone
