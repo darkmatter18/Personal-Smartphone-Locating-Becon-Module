@@ -1,12 +1,10 @@
 //Include Header file
 #include <LiquidCrystal.h>
-#include <VirtualWire.h>
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);          //Declearing lcd pins
 int pinLED = 9;                                 //Declearing LED pin for Android input
 
 int PIN_OUT = 13;                               //Define the LED Pin for MorseCode
-// int txPin = 6;
 
 #define UNIT_LENGTH    250                      //Define unit length in ms
 
@@ -26,11 +24,9 @@ const int MAX_LENGTH = 16;                      //Decleared Maximum dataLength
 byte data[MAX_LENGTH];                          //Decleared a arrey for receiving data
 int dataLength;                                 //Used to store the dataLength of Receiving byte
 
-char recData[MAX_LENGTH];
-
-// char receiveMessage;                          //Used to convert receivedData to receiveMessage for Morse
-// char arrReceiveMassage[20];
-// int xi;
+char receiveMessage;                            //Used to convert receivedData to receiveMessage for Morse
+char arrReceiveMassage[20];                     //making an array of receivedmessage
+int xi;                                         //needed for arrReceiveMassage indexing 
 
 //Build a struct with the morse code mapping
 static const struct{
@@ -67,11 +63,7 @@ void setup() {
     digitalWrite( PIN_OUT, LOW );               //Assign Morse led pin as LOW
   
     lcd.begin(16, 2);                           // 16*2 LCD decleared
-    lcd.print("Host Mode:");
-    // pinMode(txPin, OUTPUT);                     
-    // vw_set_ptt_inverted(true);
-    // vw_set_tx_pin(txPin);
-    // vw_setup(4000);
+    lcd.print("Host Mode:");                    //Print the Line
 }
 
 void loop(){                             
@@ -80,15 +72,15 @@ void loop(){
         while(Serial.available() > 0){          //If Serial is avaiable, then
             int byteIn = Serial.read();         //Read data from serial and
             cmdHandle(byteIn);                  //Put data one bit by another -using loop
+            arrReceiveMassage[xi] = receivedmessage         //Making an array by received char
+            xi++;
         }                                       //Unless Serial stop sendind data 
     }
     //Morse code Execution
-    String morseWord = encode(recData);
-
-    // send(arrReceiveMassage);
+    String morseWord = encode(arrReceiveMassage);
 }
 
-
+//Function that handles all received bytes from phone
 void cmdHandle(int incomingByte){
   
     //prevent from lost-sync
@@ -99,7 +91,8 @@ void cmdHandle(int incomingByte){
     if(incomingByte == IGNORE_00){
         return;
     }
-  
+    
+    //Switch for use commend state
     switch(cmdState){
         case ST_1_CMD:{
             switch(incomingByte){
@@ -135,13 +128,12 @@ void cmdHandle(int incomingByte){
         break;
         case ST_3_DATA:{
             data[dataIndex] = incomingByte;
-            recData[dataIndex] = (char)incomingByte;            //
             dataIndex++;
           
             Serial.write(incomingByte);
             lcd.write(incomingByte);
           
-            //receiveMessage = (char)incomingByte;
+            receiveMessage = (char)incomingByte;
 
             if(dataIndex==dataLength){
                 cmdState = ST_0; 
@@ -151,6 +143,8 @@ void cmdHandle(int incomingByte){
     }
   
 }
+
+//Function to endone the String to morse code
 String encode(const char *string){
     size_t i, j;
     String morseWord = "";
@@ -165,9 +159,4 @@ String encode(const char *string){
         morseWord += " "; //Add tailing space to seperate the chars
     }
     return morseWord;  
-}
-
-void send (char *message){
-    vw_send((uint8_t *)message, strlen(message));
-    vw_wait_tx(); // Wait until the whole message is gone
 }
