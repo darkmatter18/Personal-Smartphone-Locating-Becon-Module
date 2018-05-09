@@ -66,14 +66,13 @@ void setup() {
     lcd.print("Host Mode:");                            //Print the Line
 }
 
-void loop(){                             
+void loop(){
+    xi = 0;                             
     //Getting Data via Serial
     if(Serial.available()){                             //Cheak if the serial is available
         while(Serial.available() > 0){                  //If Serial is avaiable, then
             int byteIn = Serial.read();                 //Read data from serial and
             cmdHandle(byteIn);                          //Put data one bit by another -using loop
-            arrReceiveMassage[xi] = receiveMessage;     //Making an array by received char
-            xi++;
         }                                               //Unless Serial stop sendind data 
     }
     //Morse code Execution
@@ -156,6 +155,8 @@ void cmdHandle(int incomingByte){
             lcd.write(incomingByte);
           
             receiveMessage = (char)incomingByte;
+            arrReceiveMassage[xi] = receiveMessage;
+            xi++;
 
             if(dataIndex==dataLength){
                 cmdState = ST_0; 
@@ -180,5 +181,5 @@ String encode(const char *string){
         }
         morseWord += " "; //Add tailing space to seperate the chars
     }
-    return morseWord;  
+    return morseWord+"    ";  
 }
