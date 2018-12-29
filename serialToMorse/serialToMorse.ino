@@ -29,41 +29,42 @@ char arrReceiveMassage[20];                             //making an array of rec
 int xi;                                                 //needed for arrReceiveMassage indexing 
 
 //Build a struct with the morse code mapping
-static const struct{
-    const char letter, *code;
-    } MorseMap[] =
-        {   
-            //Small letter
-            { 'a', ".-" },{ 'b', "-..." },{ 'c', "-.-."},{ 'd', "-.." },{ 'e', "." },{ 'f', "..-." },{ 'g', "--." },{ 'h', "...." },{ 'i', ".." },
-            { 'j', ".---" },{ 'k', ".-.-" },{ 'l', ".-.." },{ 'm', "--" },{ 'n', "-." },{ 'o', "---" },{ 'p', ".--." },{ 'q', "--.-" },
-	        { 'r', ".-." },{ 's', "..." },{ 't', "-" },{ 'u', "..-" },{ 'v', "...-" },{ 'w', ".--" },{ 'x', "-..-" },{ 'y', "-.--" },{ 'z', "--.." },
+// static const struct{
+//     const char letter, *code;
+//     } MorseMap[] =
+//         {   
+//             //Small letter
+//             { 'a', ".-" },{ 'b', "-..." },{ 'c', "-.-."},{ 'd', "-.." },{ 'e', "." },{ 'f', "..-." },{ 'g', "--." },{ 'h', "...." },{ 'i', ".." },
+//             { 'j', ".---" },{ 'k', ".-.-" },{ 'l', ".-.." },{ 'm', "--" },{ 'n', "-." },{ 'o', "---" },{ 'p', ".--." },{ 'q', "--.-" },
+// 	        { 'r', ".-." },{ 's', "..." },{ 't', "-" },{ 'u', "..-" },{ 'v', "...-" },{ 'w', ".--" },{ 'x', "-..-" },{ 'y', "-.--" },{ 'z', "--.." },
 
-            //Capital Letter
-            { 'A', ".-" },{ 'B', "-..." },{ 'C', "-.-."},{ 'D', "-.." },{ 'E', "." },{ 'F', "..-." },{ 'G', "--." },{ 'H', "...." },{ 'I', ".." },
-            { 'J', ".---" },{ 'K', ".-.-" },{ 'L', ".-.." },{ 'M', "--" },{ 'N', "-." },{ 'O', "---" },{ 'P', ".--." },{ 'Q', "--.-" },
-	        { 'R', ".-." },{ 'S', "..." },{ 'T', "-" },{ 'U', "..-" },{ 'V', "...-" },{ 'W', ".--" },{ 'X', "-..-" },{ 'Y', "-.--" },{ 'Z', "--.." },
+//             //Capital Letter
+//             { 'A', ".-" },{ 'B', "-..." },{ 'C', "-.-."},{ 'D', "-.." },{ 'E', "." },{ 'F', "..-." },{ 'G', "--." },{ 'H', "...." },{ 'I', ".." },
+//             { 'J', ".---" },{ 'K', ".-.-" },{ 'L', ".-.." },{ 'M', "--" },{ 'N', "-." },{ 'O', "---" },{ 'P', ".--." },{ 'Q', "--.-" },
+// 	        { 'R', ".-." },{ 'S', "..." },{ 'T', "-" },{ 'U', "..-" },{ 'V', "...-" },{ 'W', ".--" },{ 'X', "-..-" },{ 'Y', "-.--" },{ 'Z', "--.." },
 
-            //space
-            { ' ', "     " }, //Gap between word, seven units 
+//             //space
+//             { ' ', "     " }, //Gap between word, seven units 
 
-            //Numbers
-	        { '1', ".----" },{ '2', "..---" },{ '3', "...--" },{ '4', "....-" },{ '5', "....." },{ '6', "-...." },{ '7', "--..." },{ '8', "---.." },
-	        { '9', "----." },{ '0', "-----" },
+//             //Numbers
+// 	        { '1', ".----" },{ '2', "..---" },{ '3', "...--" },{ '4', "....-" },{ '5', "....." },{ '6', "-...." },{ '7', "--..." },{ '8', "---.." },
+// 	        { '9', "----." },{ '0', "-----" },
 
-            //Symbols
-	        { '.', "·–·–·–" },{ ',', "--..--" },{ '?', "..--.." },{ '!', "-.-.--" },{ ':', "---..." },{ ';', "-.-.-." },{ '(', "-.--." },
-            { ')', "-.--.-" },{ '"', ".-..-." },{ '@', ".--.-." },{ '&', ".-..." },
-        };
+//             //Symbols
+// 	        { '.', "·–·–·–" },{ ',', "--..--" },{ '?', "..--.." },{ '!', "-.-.--" },{ ':', "---..." },{ ';', "-.-.-." },{ '(', "-.--." },
+//             { ')', "-.--.-" },{ '"', ".-..-." },{ '@', ".--.-." },{ '&', ".-..." },
+//         };
 
 void setup() {
     Serial.begin(9600);
     pinMode(pinLED, OUTPUT);                            //Assign Android led pin as output pin
-    digitalWrite(pinLED, LOW);                          //Assign android led pin as LOW
-    pinMode( PIN_OUT, OUTPUT );                         //Assign Morse led as output pin
-    digitalWrite( PIN_OUT, LOW );                       //Assign Morse led pin as LOW
+    digitalWrite(pinLED, LOW);                          //Assign Android led pin as LOW
+
+    // pinMode( PIN_OUT, OUTPUT );                      //Assign Morse led as output pin
+    // digitalWrite( PIN_OUT, LOW );                    //Assign Morse led pin as LOW
   
     lcd.begin(16, 2);                                   // 16*2 LCD decleared
-    lcd.print("Host Mode:");                            //Print the Line
+    lcd.print("PSLBM");                                 //Print the Line
 }
 
 void loop(){
@@ -75,8 +76,8 @@ void loop(){
             cmdHandle(byteIn);                          //Put data one bit by another -using loop
         }                                               //Unless Serial stop sendind data 
     }
-    //Morse code Execution
-    String morseWord = encode(arrReceiveMassage);
+    // Morse code Execution
+    // String morseWord = encode(arrReceiveMassage);
 
     //Gives the LED responce
     for(int i=0; i<=morseWord.length(); i++){
@@ -168,18 +169,18 @@ void cmdHandle(int incomingByte){
 }
 
 //Function to endone the String to morse code
-String encode(const char *string){
-    size_t i, j;
-    String morseWord = "";
+// String encode(const char *string){
+//     size_t i, j;
+//     String morseWord = "";
   
-    for( i = 0; string[i]; ++i ){
-        for( j = 0; j < sizeof MorseMap / sizeof *MorseMap; ++j ){
-            if( toupper(string[i]) == MorseMap[j].letter ){
-                morseWord += MorseMap[j].code;
-                break;
-            }
-        }
-        morseWord += " "; //Add tailing space to seperate the chars
-    }
-    return morseWord+"    ";  
-}
+//     for( i = 0; string[i]; ++i ){
+//         for( j = 0; j < sizeof MorseMap / sizeof *MorseMap; ++j ){
+//             if( toupper(string[i]) == MorseMap[j].letter ){
+//                 morseWord += MorseMap[j].code;
+//                 break;
+//             }
+//         }
+//         morseWord += " "; //Add tailing space to seperate the chars
+//     }
+//     return morseWord+"    ";  
+// }
